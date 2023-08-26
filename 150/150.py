@@ -24,7 +24,7 @@ def distance(x1, y1, x2, y2):
 dists = [(100000,(123,123))]
 for count, each in enumerate(data):
     dist = distance(c_point[0], c_point[1], each[0], each[1])
-    highest = dists.index(max(dists, key=lambda k: k[0])) if dists else 0
+    highest = dists.index(max(dists, key=lambda k: k[0]))
     if dist < dists[highest][0] and len(dists) < k:
         dists.append((dist,each))
     elif dist < dists[highest][0] and len(dists) == k:
