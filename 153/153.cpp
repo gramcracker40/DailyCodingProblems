@@ -20,7 +20,7 @@ int main()
     string word = "", first = "", second = "";
     int iterr = 0, pos = 0, pos1 = 0, pos2 = 0;
     bool runLogic = false, pos2Set = false;
-    int best = 1000;
+    int best = 10000;
 
     // main logic
     input += " ";
