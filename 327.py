@@ -1,11 +1,4 @@
-# This problem was asked by Salesforce.
-
-# Write a program to merge two binary trees. Each node in the 
-# new tree should hold a value equal to the sum of the values of 
-# the corresponding nodes of the input trees.
-
-# If only one input tree has a node in a given position, the corresponding node 
-# in the new tree should match that input node.
+from collections import deque
 
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
@@ -13,71 +6,106 @@ class TreeNode:
         self.left = left
         self.right = right
 
-def mergeTrees(t1, t2):
-    # If both trees are empty
-    if not t1 and not t2:
+class Tree:
+    def __init__(self, lst):
+        if lst:
+            self.root = self.build_tree(lst, 0)
+        else:
+            self.root = None
+
+    def build_tree(self, lst, index):
+        if index < len(lst) and lst[index] is not None:
+            node = TreeNode(lst[index])
+            node.left = self.build_tree(lst, 2 * index + 1)
+            node.right = self.build_tree(lst, 2 * index + 2)
+            return node
         return None
-    
-    # If one of the trees is empty, return the other tree
-    if not t1:
-        return t2
-    if not t2:
+
+    @staticmethod
+    def print_pre_order(root):
+        """Pre-order traversal: Root -> Left -> Right"""
+        if root:
+            print(root.val, end=' ')
+            Tree.print_pre_order(root.left)
+            Tree.print_pre_order(root.right)
+
+    @staticmethod
+    def print_level_order(root):
+        """Level-order traversal: prints nodes level by level"""
+        if not root:
+            return
+        
+        queue = deque([root])
+        while queue:
+            node = queue.popleft()
+            print(node.val, end=' ')
+
+            if node.left:
+                queue.append(node.left)
+            if node.right:
+                queue.append(node.right)
+
+    @staticmethod
+    def mergeTrees(t1, t2):
+        # If both trees are empty
+        if not t1 and not t2:
+            return None
+        
+        # If one of the trees is empty, return the other tree
+        if not t1:
+            return t2
+        if not t2:
+            return t1
+
+        # Merge the values
+        t1.val += t2.val
+
+        # Recursively merge the left and right children
+        t1.left = Tree.mergeTrees(t1.left, t2.left)
+        t1.right = Tree.mergeTrees(t1.right, t2.right)
+
         return t1
 
-    # Merge the values
-    t1.val += t2.val
+# testing helper functions
+def build_and_merge_trees(tree1_values, tree2_values):
+    t1 = Tree(tree1_values)
+    t2 = Tree(tree2_values)
+    return Tree.mergeTrees(t1.root, t2.root)
 
-    # Recursively merge the left and right children
-    t1.left = mergeTrees(t1.left, t2.left)
-    t1.right = mergeTrees(t1.right, t2.right)
+def print_test_case(case_number, tree1_values, tree2_values):
+    merged_tree_root = build_and_merge_trees(tree1_values, tree2_values)
 
-    return t1
+    print(f"Test Case {case_number}:")
+    print("Merged Tree (Pre-order Traversal): ", end="")
+    Tree.print_pre_order(merged_tree_root)
+    print("\nMerged Tree (Level-order Traversal): ", end="")
+    Tree.print_level_order(merged_tree_root)
+    print("\n")
 
-# Helper function to create a tree from a list
-def create_tree(lst):
-    if not lst:
-        return None
-    root = TreeNode(lst[0])
-    queue = [root]
-    i = 1
-    while i < len(lst):
-        current = queue.pop(0)
-        if lst[i] is not None:
-            current.left = TreeNode(lst[i])
-            queue.append(current.left)
-        i += 1
-        if i < len(lst) and lst[i] is not None:
-            current.right = TreeNode(lst[i])
-            queue.append(current.right)
-        i += 1
-    return root
 
-# Test Case 1
-t1 = create_tree([1, 3, 2, 5, None])
-t2 = create_tree([2, 1, 3, None, 4, None, 7])
-merged_tree_1 = mergeTrees(t1, t2)
-
-# Test Case 2
-t1 = create_tree([1])
-t2 = create_tree([1, 2, 7])
-merged_tree_2 = mergeTrees(t1, t2)
-
-# Test Case 3
-t1 = create_tree([5, 1])
-t2 = None
-merged_tree_3 = mergeTrees(t1, t2)
-
-# Function to print the tree in pre-order traversal
-def print_tree(root):
-    if root:
-        print(root.val, end=' ')
-        print_tree(root.left)
-        print_tree(root.right)
-
-# Print the results
-print("Test Case 1:")
-print_tree(merged_tree_1)
-print("\nTest Case 2:")
-print_tree(merged_tree_2)
-print("\nTest Case 3:")
-print_tree(merged_tree_3)
+if __name__ == "__main__":
+    print_test_case(1, [1, 3, 2, 4, 0], 
+                       [2, 1, 3, 0, 4, 0, 7])
+    print_test_case(2, [1], 
+                       [1, 2, 7])
+    print_test_case(3, [5, 1], None)
+    print_test_case(4, [3, 4, 5], 
+                       [1, 2, 3])
+    print_test_case(5, [7, 8, 9, 1, 2, 3, 4], 
+                       [5, 6, 0, 7])
+    print_test_case(6, [1, 2], 
+                       [3, 4, 5, 6])
+    print_test_case(7, [3], 
+                       [])
+    print_test_case(8, [], 
+                       [4, 5, 6])
+    print_test_case(9, [1, None, 2], 
+                       [1, 2])
+    print_test_case(10,[2, 3, 4, 5], 
+                       [1, 2, 3, None, None, 6])
+    print_test_case(11,[3, 4, 5, 6, 7], 
+                       [1, None, 2])
+    print_test_case(12,[None, None, 3], 
+                       [1, 2])
+    print_test_case(13,[5, 4, 3, 2, 1], 
+                       [1, 2, 3, 4, 5])
